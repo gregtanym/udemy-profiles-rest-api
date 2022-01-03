@@ -5,6 +5,7 @@ from rest_framework import status
 from rest_framework import viewsets
 from rest_framework.authentication import TokenAuthentication
 # TokenAuthentication works by generating a random token stringwhen user logs in, and token is attached to every request made by the user
+from rest_framework import filters
 
 from profiles_api import serializers
 from profiles_api import models
@@ -118,6 +119,9 @@ class UserProfileViewSet(viewsets.ModelViewSet):
     authentication_classes = (TokenAuthentication,)
     permission_classes = (permissions.UpdateOwnProfile,)
     # authentication and permissions is not the same thing
+
+    filter_backends = (filters.SearchFilter,)
+    search_fields = ('name', 'email',)
 
 
 
