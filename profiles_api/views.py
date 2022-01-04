@@ -3,9 +3,11 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework import viewsets
+from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.authentication import TokenAuthentication
 # TokenAuthentication works by generating a random token stringwhen user logs in, and token is attached to every request made by the user
 from rest_framework import filters
+from rest_framework.settings import api_settings
 
 from profiles_api import serializers
 from profiles_api import models
@@ -118,16 +120,19 @@ class UserProfileViewSet(viewsets.ModelViewSet):
 
     authentication_classes = (TokenAuthentication,)
     permission_classes = (permissions.UpdateOwnProfile,)
-    # authentication and permissions is not the same thing
+    # authentication (for login) and permissions (for editing profiles) is not the same thing
 
     filter_backends = (filters.SearchFilter,)
     search_fields = ('name', 'email',)
 
-
-
-
+# ObtainAuthToken is a class created by django already but right now we want to add more stuff to it
+class UserLoginApiView(ObtainAuthToken):
+    """Handle creating user authentication tokens"""
+    # this adds the renderer classes to our ObtainAuthToken view which will enable it in our django admin
+    renderer_classes = api_settings.DEFAULT_RENDERER_CLASSES
 
 
 
 
 # assigning a serializer to the top of our viewset tells the API that it knows our viewset is going to accept a post with a name field
+# every single request made to the API has a http header and in this header will have our authtoken when a user logs in. django can check if this token exist
